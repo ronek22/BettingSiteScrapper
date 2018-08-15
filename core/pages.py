@@ -50,22 +50,27 @@ class BetDetailPage(Page):
 
         bet_summary = {
             'date': self.get_date_and_convert(summary),
-            'live': self.check_if_live()
+            'live': self.check_if_live(),
         }
 
         bet_summary.update(self.get_general_info(summary))
-        bet_summary['events'] = self.get_events_from_bet(),
+        bet_summary['events'] = self.get_events_from_bet()
         return bet_summary
 
     def get_general_info(self, summary):
         table = summary.find_element(By.TAG_NAME, 'tbody')
         rows = table.find_elements(By.TAG_NAME, 'tr')
 
+        total_odds = float(self.str_to_float(rows[0].text))
+        stake = float(self.str_to_float(rows[3].text))
+        stake_after_taxes = float(self.str_to_float(rows[1].text))
+
         return {
-            'total_odds': float(self.strtfloat(rows[0].text)),
-            'stake': self.strtfloat(rows[3].text),
-            'stake_after_taxes': self.strtfloat(rows[1].text),
-            'payout': self.strtfloat(rows[4].text)}
+            'total_odds': total_odds,
+            'stake': stake,
+            'stake_after_taxes': stake_after_taxes,
+            'potential_payout': float("{0:.2f}".format(stake_after_taxes*total_odds)),
+            'payout': float(self.str_to_float(rows[4].text))}
 
     def get_date_and_convert(self, summary):
         bottom_info = summary.find_element(*self.locator.BOTTOM_INFO)
@@ -82,21 +87,66 @@ class BetDetailPage(Page):
 
         for bet in bets:
             event_detail = {
-                'name': bet.find_element(*self.locator.BET_NAME).text,
-                'selection': bet.find_element(*self.locator.BET_TYPE).text,
+                'selection': bet.find_element(*self.locator.BET_TYPE).text.strip(),
                 'type': bet.find_elements(By.TAG_NAME, 'td')[1].text.strip(),
                 'odds': float(bet.find_element(*self.locator.BET_ODDS).text),
                 'result': bet.find_element(*self.locator.BET_RESULT).text.strip(),
                 'win': self.is_winner(bet.get_attribute("class"))}
+            event_detail.update(self.process_bet_title(bet.find_element(*self.locator.BET_NAME).text))
             events.append(event_detail)
         return events
+
+    def process_bet_title(self, title):
+        sports = {
+            'pilka nozna': 'Football',
+            'Piłka nożna': 'Football',
+            'Pilka nozna': 'Football',
+            'Piłka nożna-MS 2018': ('Football', 'MS 2018'),
+            'Tenis M.': 'Tennis',
+            'Tenis K.': 'Tennis',
+            'tenis': 'Tennis',
+            'Koszykówka': 'Basketball',
+            'koszykówka': 'Basketball',
+            'Baseball': 'Baseball',
+            'E-Sport': 'E-Sport',
+            'MS': 'MS 2018',
+            'NBA': 'NBA',
+            'hokej': 'Hokej',
+            'NHL': 'NHL'
+        }
+
+        title = title.split(' - ')
+        title_len = len(title)
+
+        if title[0][0].isupper():
+            if title_len == 3:
+                bet = {'sport': title[0], 'league': title[1], 'name': title[2]}
+            elif title[0] == 'Lekkoatletyka':
+                bet = {'sport': title[0], 'league': '', 'name': title[2] + ' - ' + title[1]}
+            elif title[0] == 'HIT DNIA':
+                bet = {'sport': sports[title[1]], 'league': '', 'name': title[2] + ' - ' + title[3]}
+            elif title[0] == 'Piłka nożna-MS 2018':
+                bet = {'sport': sports[title[0]][0], 'league': sports[title[0]][1], 'name': title[2] + ' - ' + title[3]}
+            elif title_len == 4:
+                bet = {'sport': sports[title[0]], 'league': title[1], 'name': title[2] + ' - ' + title[3]}
+            elif title_len == 5:
+                bet = {'sport': sports[title[0]], 'league': title[1] + ' - ' + title[2], 'name': title[2] + ' - ' + title[3]}
+        else:
+            # live bets is not capitalized
+            if title_len == 4:
+                bet = {'sport': sports[title[0]], 'league': sports[title[1]], 'name': title[2] + ' - ' + title[3]}
+            elif title_len == 5:
+                bet = {'sport': sports[title[0]], 'league': title[1] + ' - ' + title[2], 'name': title[3] + ' - ' + title[4]}
+            elif title_len == 6:
+                bet = {'sport': sports[title[0]], 'league': title[1] + ' - ' + title[2], 'name': title[4] + ' - ' + title[5]}
+        return bet
 
     @staticmethod
     def is_winner(css_name):
         return 'Y' if 'non_winning' not in css_name else 'N'
 
     @staticmethod
-    def strtfloat(text):
+    def str_to_float(text):
         return re.sub('[^\d\.]', '', text)
 
     def get_next_bet(self):
@@ -114,6 +164,7 @@ class BetDetailPage(Page):
     def get_next_page(self):
         url = re.sub(r'\d+$', '', self.get_url())
         self.driver.get(url + str(self.offset))
+        print('Opening: ' + url)
         self.offset += 30
 
     def click_on_first_bet(self):
