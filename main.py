@@ -1,7 +1,5 @@
-from core.fortuna import Fortuna
-
+from core.menu import Menu
 
 if __name__ == "__main__":
-    site = Fortuna()
-    site.login()
-    site.get_history()
+    menu = Menu()
+

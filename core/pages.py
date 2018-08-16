@@ -1,4 +1,5 @@
 from core.base import Page
+from core.constants import sports
 from core.locators import *
 import re
 from datetime import datetime
@@ -97,26 +98,9 @@ class BetDetailPage(Page):
         return events
 
     def process_bet_title(self, title):
-        sports = {
-            'pilka nozna': 'Football',
-            'Piłka nożna': 'Football',
-            'Pilka nozna': 'Football',
-            'Piłka nożna-MS 2018': ('Football', 'MS 2018'),
-            'Tenis M.': 'Tennis',
-            'Tenis K.': 'Tennis',
-            'tenis': 'Tennis',
-            'Koszykówka': 'Basketball',
-            'koszykówka': 'Basketball',
-            'Baseball': 'Baseball',
-            'E-Sport': 'E-Sport',
-            'MS': 'MS 2018',
-            'NBA': 'NBA',
-            'hokej': 'Hokej',
-            'NHL': 'NHL'
-        }
-
         title = title.split(' - ')
         title_len = len(title)
+        bet = dict()
 
         if title[0][0].isupper():
             if title_len == 3:
@@ -124,22 +108,32 @@ class BetDetailPage(Page):
             elif title[0] == 'Lekkoatletyka':
                 bet = {'sport': title[0], 'league': '', 'name': title[2] + ' - ' + title[1]}
             elif title[0] == 'HIT DNIA':
-                bet = {'sport': sports[title[1]], 'league': '', 'name': title[2] + ' - ' + title[3]}
+                bet = {'sport': self.parse_sport(title[1]), 'league': '', 'name': title[2] + ' - ' + title[3]}
             elif title[0] == 'Piłka nożna-MS 2018':
-                bet = {'sport': sports[title[0]][0], 'league': sports[title[0]][1], 'name': title[2] + ' - ' + title[3]}
+                bet = {'sport': self.parse_sport(title[0])[0], 'league': self.parse_sport(title[0])[1], 'name': title[2] + ' - ' + title[3]}
             elif title_len == 4:
-                bet = {'sport': sports[title[0]], 'league': title[1], 'name': title[2] + ' - ' + title[3]}
+                bet = {'sport': self.parse_sport(title[0]), 'league': title[1], 'name': title[2] + ' - ' + title[3]}
             elif title_len == 5:
-                bet = {'sport': sports[title[0]], 'league': title[1] + ' - ' + title[2], 'name': title[2] + ' - ' + title[3]}
+                bet = {'sport': self.parse_sport(title[0]), 'league': title[1] + ' - ' + title[2], 'name': title[2] + ' - ' + title[3]}
         else:
             # live bets is not capitalized
             if title_len == 4:
-                bet = {'sport': sports[title[0]], 'league': sports[title[1]], 'name': title[2] + ' - ' + title[3]}
+                bet = {'sport': self.parse_sport(title[0]), 'league': self.parse_sport(title[1]), 'name': title[2] + ' - ' + title[3]}
             elif title_len == 5:
-                bet = {'sport': sports[title[0]], 'league': title[1] + ' - ' + title[2], 'name': title[3] + ' - ' + title[4]}
+                bet = {'sport': self.parse_sport(title[0]), 'league': title[1] + ' - ' + title[2], 'name': title[3] + ' - ' + title[4]}
             elif title_len == 6:
-                bet = {'sport': sports[title[0]], 'league': title[1] + ' - ' + title[2], 'name': title[4] + ' - ' + title[5]}
+                bet = {'sport': self.parse_sport(title[0]), 'league': title[1] + ' - ' + title[2], 'name': title[4] + ' - ' + title[5]}
         return bet
+
+    @staticmethod
+    def parse_sport(title):
+        value = ''
+        try:
+            value = sports[title]
+        except KeyError:
+            value = title
+        finally:
+            return value
 
     @staticmethod
     def is_winner(css_name):

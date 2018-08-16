@@ -26,6 +26,7 @@ class Fortuna:
         self.loop_bets()
 
         self.save_to_json()
+        self.driver.close()
 
     def loop_bets(self):
         detail = BetDetailPage(self.driver)
