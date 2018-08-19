@@ -7,7 +7,9 @@ class Fortuna:
     def __init__(self):
         self.user = (input("User: "), input("Password: "))
         self.filename = 'history_' + self.user[0] + '.json'
-        self.driver = webdriver.Firefox(executable_path='drivers/geckodriver.exe')
+        options = webdriver.FirefoxOptions()
+        options.add_argument('-headless')
+        self.driver = webdriver.Firefox(firefox_options=options, executable_path='drivers/geckodriver.exe')
         self.driver.get("https://www.efortuna.pl")
         self.bet_list = []
 

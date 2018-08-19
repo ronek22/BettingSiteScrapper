@@ -5,7 +5,6 @@ TAX = 0.88
 
 
 def roi(total_stake, total_payout):
-    # it doing it wrong
     result = ((total_payout - total_stake)/total_stake)*100
     return cash_format(result) + "%"
 
@@ -17,7 +16,7 @@ def streak(table):
 
 
 def streak_acco(table):
-    win = table['payout'] > 0
+    win = table['status'] == 'W'
     res = dict(win.value_counts())
     y, n = res[True], res[False]
     return cash_format(y / (y+n)*100) + "%"
@@ -55,9 +54,14 @@ def possibility_of_no_acco_strategy(events, investment, parts, tax):
 
 
 def run_analysis():
+
     data = choose_user()
     table = json_normalize(data)
     all_events = json_normalize(data, record_path='events')
+
+    # delete pending bets from tables
+    table = table[table.status != 'P']
+    all_events = all_events[all_events.win != 'P']
 
     total_stake = table['stake'].sum()
     total_pot_payout = table['potential_payout'].sum()
@@ -68,6 +72,6 @@ def run_analysis():
     print("PROFIT: ", cash_format(total_payout - total_stake))
     print("\nSTREAK WITHOUT ACCUMULATOR", streak(all_events))
     print("STREAK WITH ACCUMULATOR", streak_acco(table))
-    print("\nSINGLE BETS WITH CONSTANT STAKE CAN PRODUCE GIVEN PROFIT: "  + bet_with_constant_stake_no_acco(all_events, 10))
+    print("\nSINGLE BETS WITH CONSTANT STAKE CAN PRODUCE GIVEN PROFIT: " + bet_with_constant_stake_no_acco(all_events, 10))
     print("POSSIBILITY OF NO ACCO STRATEGY WITH TAXES", possibility_of_no_acco_strategy(all_events, 1000, 100, True))
     print("POSSIBILITY OF NO ACCO STRATEGY WITHOUT TAXES", possibility_of_no_acco_strategy(all_events, 1000, 100, False))

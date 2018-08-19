@@ -65,14 +65,17 @@ class BetDetailPage(Page):
         total_odds = float(self.str_to_float(rows[0].text))
         stake = float(self.str_to_float(rows[3].text))
         stake_after_taxes = float(self.str_to_float(rows[1].text))
+        payout = float(self.str_to_float(rows[4].text))
 
-        # TODO: Add status to bet info (W, L, P, R)
+        # TODO: Probably not working with additional taxes
         return {
             'total_odds': total_odds,
             'stake': stake,
             'stake_after_taxes': stake_after_taxes,
             'potential_payout': float("{0:.2f}".format(stake_after_taxes*total_odds)),
-            'payout': float(self.str_to_float(rows[4].text))}
+            'payout': payout,
+            'status': self.bet_status(payout)
+        }
 
     def get_date_and_convert(self, summary):
         bottom_info = summary.find_element(*self.locator.BOTTOM_INFO)
@@ -138,7 +141,12 @@ class BetDetailPage(Page):
 
     @staticmethod
     def is_winner(css_name):
-        return 'Y' if 'non_winning' not in css_name else 'N'
+        if 'non_winning' in css_name:
+            return 'N'
+        elif 'unresolved' in css_name:
+            return 'P'
+        else:
+            return 'Y'
 
     @staticmethod
     def str_to_float(text):
@@ -152,6 +160,12 @@ class BetDetailPage(Page):
 
     def still_have_bets(self):
         return False if "Brak kupo" in self.driver.page_source else True
+
+    def bet_status(self, payout):
+        if "Kupon jest już rozs" in self.driver.page_source:
+            return 'W' if payout > 0 else "L"
+        else:
+            return "P"
 
     def check_if_live(self):
         return 'Y' if "LIVE" in self.driver.page_source else 'N'
