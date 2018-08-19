@@ -66,6 +66,7 @@ class BetDetailPage(Page):
         stake = float(self.str_to_float(rows[3].text))
         stake_after_taxes = float(self.str_to_float(rows[1].text))
 
+        # TODO: Add status to bet info (W, L, P, R)
         return {
             'total_odds': total_odds,
             'stake': stake,

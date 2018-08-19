@@ -1,10 +1,7 @@
-import json
 from pandas.io.json import json_normalize
+from core.utility import choose_user
 
 TAX = 0.88
-
-with open('bettingHistory.json', 'r') as f:
-    data = json.load(f)
 
 
 def roi(total_stake, total_payout):
@@ -54,10 +51,11 @@ def possibility_of_no_acco_strategy(events, investment, parts, tax):
             balance += profit
         if balance < 0:
             return False
-    return "\nIT POSSIBLE, YOU'VE INVESTED {} $, YOU'VE EVERY BET HAS STAKE {} $, NOW YOU CAN WITHDRAWAL {} $".format(investment, stake, cash_format(balance)) 
+    return "\nIT POSSIBLE, YOU'VE INVESTED {} $, YOU'VE EVERY BET HAS STAKE {} $, NOW YOU CAN WITHDRAWAL {} $".format(investment, stake, cash_format(balance))
 
 
 def run_analysis():
+    data = choose_user()
     table = json_normalize(data)
     all_events = json_normalize(data, record_path='events')
 
