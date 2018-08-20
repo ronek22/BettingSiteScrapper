@@ -4,6 +4,8 @@ from core.locators import *
 import re
 from datetime import datetime
 
+from core.utility import str_to_float
+
 
 class LogInPage(Page):
     def __init__(self, driver):
@@ -24,6 +26,34 @@ class LogInPage(Page):
         self.enter_password(password)
         self.click_login_button()
         self.wait_for_url(self.base_url + '?log=success')
+
+
+class DepositsPage(Page):
+    def __init__(self, driver):
+        super().__init__(driver, 'https://www.efortuna.pl/pl/profil_uzytkownika/user_profile/bilans_konta/')
+        self.locator = DepositsPageLocators
+        self.open()
+
+    def select_deposit_filter(self, value):
+        form = self.wait_for_element(*self.locator.FORM)
+        self.select_from_dropdown(value, *self.locator.TYPE_OF_TRANSACTION)
+        form.submit()
+
+    def scrap_deposits_data(self):
+        self.select_deposit_filter('wpłata - przelew bankowy')
+        table = self.wait_for_element(*self.locator.TABLE)
+        deposits = table.find_elements(*self.locator.DEPOSITS_IN_TABLE)[1:]
+
+        result = []
+
+        for deposit in deposits:
+            deposit_detail = {
+                'value': float(str_to_float(deposit.find_element(*self.locator.CASH).text)),
+                'transaction_number': deposit.find_element(*self.locator.NUMBER).text,
+                'date': deposit.find_element(*self.locator.DATE).text.replace('  ', ' ')
+            }
+            result.append(deposit_detail)
+        return result
 
 
 class BetHistoryPage(Page):
@@ -62,10 +92,10 @@ class BetDetailPage(Page):
         table = summary.find_element(By.TAG_NAME, 'tbody')
         rows = table.find_elements(By.TAG_NAME, 'tr')
 
-        total_odds = float(self.str_to_float(rows[0].text))
-        stake = float(self.str_to_float(rows[3].text))
-        stake_after_taxes = float(self.str_to_float(rows[1].text))
-        payout = float(self.str_to_float(rows[4].text))
+        total_odds = float(str_to_float(rows[0].text))
+        stake = float(str_to_float(rows[3].text))
+        stake_after_taxes = float(str_to_float(rows[1].text))
+        payout = float(str_to_float(rows[4].text))
 
         # TODO: Probably not working with additional taxes
         return {
@@ -147,10 +177,6 @@ class BetDetailPage(Page):
             return 'P'
         else:
             return 'Y'
-
-    @staticmethod
-    def str_to_float(text):
-        return re.sub('[^\d\.]', '', text)
 
     def get_next_bet(self):
         self.driver.switch_to.default_content()

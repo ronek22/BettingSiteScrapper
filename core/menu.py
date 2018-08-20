@@ -17,6 +17,8 @@ class Menu:
         site = Fortuna()
         site.login()
         site.get_history()
+        site.get_deposits()
+        site.close()
 
     def menu(self):
         menu_options = [self.perform_scraping, run_analysis, self.close_program]
@@ -25,6 +27,6 @@ class Menu:
             choose = int(input("> "))
             if 1 <= choose <= len(menu_options):
                 menu_options[choose - 1]()
-                input("Click any key to continue")
+                input("Click any key to continue...")
             else:
                 print("That option doesn't exist. Try again")

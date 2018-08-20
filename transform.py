@@ -54,24 +54,27 @@ def possibility_of_no_acco_strategy(events, investment, parts, tax):
 
 
 def run_analysis():
-
-    data = choose_user()
-    table = json_normalize(data)
-    all_events = json_normalize(data, record_path='events')
+    # TODO: Something is wrong with calculating profit and ROI
+    history, deposits = choose_user()
+    table_history = json_normalize(history)
+    table_deposits = json_normalize(deposits)
+    all_events = json_normalize(history, record_path='events')
 
     # delete pending bets from tables
-    table = table[table.status != 'P']
+    table_history = table_history[table_history.status != 'P']
     all_events = all_events[all_events.win != 'P']
 
-    total_stake = table['stake'].sum()
-    total_pot_payout = table['potential_payout'].sum()
-    total_payout = table['payout'].sum()
+    total_stake = table_history['stake'].sum()
+    total_pot_payout = table_history['potential_payout'].sum()
+    total_payout = table_history['payout'].sum()
+    total_deposits = table_deposits['value'].sum()
+    print("TOTAL DEPOSITS:", cash_format(total_deposits))
     print("TOTAL STAKE: ", cash_format(total_stake))
     print("TOTAL POTENTIAL PAYOUT: ", cash_format(total_pot_payout))
-    print("TOTAL PAYOUT: ", cash_format(total_payout), '\t|\tROI: ' + roi(total_stake, total_payout))
-    print("PROFIT: ", cash_format(total_payout - total_stake))
+    print("TOTAL PAYOUT: ", cash_format(total_payout), '\t|\tROI: ' + roi(total_deposits, total_payout))
+    print("PROFIT: ", cash_format(total_payout - total_deposits))
     print("\nSTREAK WITHOUT ACCUMULATOR", streak(all_events))
-    print("STREAK WITH ACCUMULATOR", streak_acco(table))
+    print("STREAK WITH ACCUMULATOR", streak_acco(table_history))
     print("\nSINGLE BETS WITH CONSTANT STAKE CAN PRODUCE GIVEN PROFIT: " + bet_with_constant_stake_no_acco(all_events, 10))
     print("POSSIBILITY OF NO ACCO STRATEGY WITH TAXES", possibility_of_no_acco_strategy(all_events, 1000, 100, True))
     print("POSSIBILITY OF NO ACCO STRATEGY WITHOUT TAXES", possibility_of_no_acco_strategy(all_events, 1000, 100, False))

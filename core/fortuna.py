@@ -6,26 +6,32 @@ from os.path import isfile
 class Fortuna:
     def __init__(self):
         self.user = (input("User: "), input("Password: "))
-        self.filename = 'history_' + self.user[0] + '.json'
+        self.history_name = 'history_' + self.user[0] + '.json'
+        self.deposits_name = 'deposits_' + self.user[0] + '.json'
         options = webdriver.FirefoxOptions()
         options.add_argument('-headless')
         self.driver = webdriver.Firefox(firefox_options=options, executable_path='drivers/geckodriver.exe')
         self.driver.get("https://www.efortuna.pl")
         self.bet_list = []
+        self.deposit_list = []
 
     def login(self):
         page = LogInPage(self.driver)
         page.login(self.user[0], self.user[1])
 
+    def get_deposits(self):
+        page = DepositsPage(self.driver)
+        self.deposit_list = page.scrap_deposits_data()
+        save_to_json(self.deposit_list, self.deposits_name)
+
     def get_history(self):
         last_date = None
-        if isfile('history/' + self.filename):
-            self.bet_list = open_json(self.filename)
+        if isfile('history/' + self.history_name):
+            self.bet_list = open_json(self.history_name)
             last_date = self.bet_list[0]['date']
 
         self.get_all_bets(last_date)
-        save_to_json(sorting_json(self.bet_list), self.filename)
-        self.driver.close()
+        save_to_json(sorting_json(self.bet_list), self.history_name)
 
     def get_all_bets(self, date=None):
         page = BetHistoryPage(self.driver)
@@ -52,3 +58,6 @@ class Fortuna:
 
                 if num_of_bets != 1: detail.get_next_bet()
             detail.get_next_page()
+
+    def close(self):
+        self.driver.close()

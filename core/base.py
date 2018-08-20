@@ -1,5 +1,6 @@
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
 
 
 class Page:
@@ -28,6 +29,10 @@ class Page:
     def wait_for_element(self, *locator):
         return self.wait.until(
             lambda self: self.find_element(*locator))
+
+    def select_from_dropdown(self, value, *locator):
+        selector = Select(self.driver.find_element(*locator))
+        selector.select_by_visible_text(value)
 
     def wait_for_url(self, target_url):
         self.wait.until(

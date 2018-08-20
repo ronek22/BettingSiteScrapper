@@ -2,6 +2,8 @@ import json
 from operator import itemgetter
 from os.path import isfile, join
 from os import listdir
+import sys, os
+import re
 
 
 def search_files():
@@ -9,17 +11,26 @@ def search_files():
 
 
 def get_users_with_files():
+    # TODO: Maybe is possible to make this with only one loop
     files = search_files()
-    return [(x[:-5].split('_')[1], x) for x in files]
+    users_diary = {x[:-5].split('_')[1]: {} for x in files}
+    for x in files:
+        user = (x[:-5].split('_'))[1]
+        if 'history' in x:
+            users_diary[user]['history'] = x
+        else:
+            users_diary[user]['deposit'] = x
+
+    return users_diary
 
 
 def choose_user():
-    list_of_users = get_users_with_files()
-    for i, user in enumerate(list_of_users):
-        print(i+1, '->', user[0])
+    users = get_users_with_files()
+    for key in users.keys():
+        print(key)
 
-    choose = int(input("Choose user: "))
-    return open_json(list_of_users[choose-1][1])
+    user = input("Choose user: ")
+    return open_json(users[user]['history']), open_json(users[user]['deposit'])  # tuple(history, deposits)
 
 
 def sorting_json(database, field='date'):
@@ -34,3 +45,7 @@ def save_to_json(database, filename):
 def open_json(filename):
     with open('history/' + filename, 'r') as f:
         return json.load(f)
+
+
+def str_to_float(text):
+    return re.sub('[^\d\.]', '', text)

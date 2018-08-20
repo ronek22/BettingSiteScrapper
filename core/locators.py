@@ -6,6 +6,16 @@ class LoginPageLocators:
     PASSWORD = (By.NAME, 'password')
 
 
+class DepositsPageLocators:
+    TYPE_OF_TRANSACTION = (By.NAME, 'type')  # dropdown for type of transaction
+    FORM = (By.ID, 'filter')  # get form to submit filters
+    TABLE = (By.CLASS_NAME, 'finOperations')
+    DEPOSITS_IN_TABLE = (By.TAG_NAME, 'tr')
+    CASH = (By.CLASS_NAME, 'amount')
+    NUMBER = (By.CLASS_NAME, 'detail')
+    DATE = (By.CLASS_NAME, 'datetime')
+
+
 class BetDetailLocators:
     FIRST_BET = (By.CLASS_NAME, 'ticket_origin')
     FRAME_DETAIL_BET = (By.ID, 'shadowbox_content')
