@@ -32,6 +32,19 @@ def choose_user():
     user = input("Choose user: ")
     return open_json(users[user]['history']), open_json(users[user]['deposit'])  # tuple(history, deposits)
 
+def cash_format(cash):
+    return "{0:.2f}".format(cash)
+
+def printf(header, value, value_type='cash'):
+    if 'cash' in value_type:
+        print('{:<35} {:>10} zł'.format(header, cash_format(value)))
+    elif 'percent' in value_type:
+        print('{:<35} {:>10} %'.format(header, cash_format(value)))
+    elif 'bool' in value_type:
+        print('{:<35} {:>10}'.format(header, 'Possible' if True else 'Not possible'))
+
+
+    
 
 def sorting_json(database, field='date'):
     return sorted(database, key=itemgetter(field), reverse=True)
