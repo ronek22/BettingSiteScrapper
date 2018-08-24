@@ -1,6 +1,6 @@
 from core.base import Page
 from core.constants import sports
-from core.locators import *
+from core.bookies.fortuna.locators import *
 import re
 from datetime import datetime
 

@@ -1,5 +1,5 @@
 from core.constants import MENU_TEXT
-from core.fortuna import Fortuna
+from core.bookies.fortuna.fortuna import Fortuna
 from core.utility import choose_user
 from analysis.user import User
 import os

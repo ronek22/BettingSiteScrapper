@@ -1,5 +1,5 @@
 from selenium import webdriver
-from core.pages import *
+from core.bookies.fortuna.pages import *
 from core.utility import sorting_json, save_to_json, open_json
 from os.path import isfile
 
