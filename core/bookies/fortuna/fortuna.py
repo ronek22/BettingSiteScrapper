@@ -1,5 +1,6 @@
 from selenium import webdriver
 from core.bookies.fortuna.pages import *
+from core.constants import GOOGLE_CHROME_BIN, CHROMEDRIVER_PATH
 from core.utility import sorting_json, save_to_json, open_json
 from os.path import isfile
 
@@ -11,10 +12,11 @@ class Fortuna:
         self.deposits_name = 'deposits_' + self.user[0] + '.json'
 
         options = webdriver.ChromeOptions()
+        options.binary_location = GOOGLE_CHROME_BIN
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
         options.add_argument('window-size=1400,1200')
-        self.driver = webdriver.Chrome(executable_path='drivers/chromedriver.exe', chrome_options=options)
+        self.driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, chrome_options=options)
         self.driver.get("https://www.efortuna.pl")
         self.bet_list = []
         self.deposit_list = []

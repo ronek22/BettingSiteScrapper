@@ -22,3 +22,6 @@ sports = {
     'NHL': 'NHL',
     'Superpuchar UEFA': 'Superpuchar UEFA'
 }
+
+GOOGLE_CHROME_BIN = '/app/.apt/usr/bin/google-chrome'
+CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
