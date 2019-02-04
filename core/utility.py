@@ -2,9 +2,10 @@ import http.client
 import json
 from operator import itemgetter
 from os.path import isfile, join
-from os import listdir
+from os import listdir, environ
 import re
 from pathlib import Path
+import redis
 
 
 def search_files():
@@ -34,12 +35,8 @@ def choose_user():
     return open_json(users[user]['history']), open_json(users[user]['deposit'])  # tuple(history, deposits)
 
 
-def get_user(user):
-    users = get_users_with_files()
-    for key in users.keys():
-        print(key)
-
-    return open_json(users[user]['history']), open_json(users[user]['deposit'])  # tuple(history, deposits)
+def get_user(db, user):
+    return open_json(db.get('history:'+user)), open_json(db.get('deposits:'+user))  # tuple(history, deposits)
 
 
 def cash_format(cash):
@@ -68,11 +65,8 @@ def sorting_json(database, field='date'):
     return sorted(database, key=itemgetter(field), reverse=True)
 
 
-def save_to_json(database, filename):
-    path = Path('history', filename)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, 'w') as outfile:
-        json.dump(database, outfile, indent=4)
+def save_to_json(database, filename, connection):
+    connection.set(filename, json.dumps(database, indent=4))
 
 
 def open_json(filename):

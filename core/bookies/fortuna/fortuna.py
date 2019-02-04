@@ -3,13 +3,16 @@ from core.bookies.fortuna.pages import *
 from core.constants import GOOGLE_CHROME_BIN, CHROMEDRIVER_PATH
 from core.utility import sorting_json, save_to_json, open_json
 from os.path import isfile
+from os import environ
+import redis
 
 
 class Fortuna:
-    def __init__(self, login, password):
+    def __init__(self, login, password, db):
+        self.db = db
         self.user = (login, password)
-        self.history_name = 'history_' + self.user[0] + '.json'
-        self.deposits_name = 'deposits_' + self.user[0] + '.json'
+        self.history_name = 'history:' + self.user[0]
+        self.deposits_name = 'deposits:' + self.user[0]
 
         options = webdriver.ChromeOptions()
         options.binary_location = GOOGLE_CHROME_BIN
@@ -28,16 +31,16 @@ class Fortuna:
     def get_deposits(self):
         page = DepositsPage(self.driver)
         self.deposit_list = page.scrap_deposits_data()
-        save_to_json(self.deposit_list, self.deposits_name)
+        save_to_json(self.deposit_list, self.deposits_name, self.db)
 
     def get_history(self):
         last_date = None
-        if isfile('history/' + self.history_name):
-            self.bet_list = open_json(self.history_name)
+        if self.r.exists(self.history_name):
+            self.bet_list = open_json(self.r.get(history_name))
             last_date = self.bet_list[0]['date']
 
         self.get_all_bets(last_date)
-        save_to_json(sorting_json(self.bet_list), self.history_name)
+        save_to_json(sorting_json(self.bet_list), self.history_name, self.db)
 
     def get_all_bets(self, date=None):
         page = BetHistoryPage(self.driver)
