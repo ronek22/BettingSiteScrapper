@@ -1,4 +1,4 @@
-from core.utility import printf
+from core.utility import printf, stringf
 from pandas.io.json import json_normalize
 
 TAX = 0.88
@@ -77,6 +77,22 @@ class User:
             header = [word.upper() for word in key.split('_')]
             header = ' '.join(header) + ': '
             printf(header, val, 'percent')
+
+    def get_data(self):
+        content = ''
+        for key, val in self.total.items():
+            header = [word.upper() for word in key.split('_')]
+            header = 'TOTAL ' + ' '.join(header) + ': '
+            content += stringf(header, val, 'cash')
+
+        content += '\n'
+
+        for key, val in self.indexes.items():
+            header = [word.upper() for word in key.split('_')]
+            header = ' '.join(header) + ': '
+            content += stringf(header, val, 'percent')
+
+        return content
 
 
 

@@ -1,5 +1,7 @@
-from core.menu import Menu
-
+from core.runner import Runner
 
 if __name__ == "__main__":
-    menu = Menu()
+    with open('client.secret', 'r') as f:
+        login, password = f.readline().split()
+
+    runner = Runner(login, password)

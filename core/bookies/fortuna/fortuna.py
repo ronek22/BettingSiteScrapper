@@ -5,8 +5,8 @@ from os.path import isfile
 
 
 class Fortuna:
-    def __init__(self):
-        self.user = (input("User: "), input("Password: "))
+    def __init__(self, login, password):
+        self.user = (login, password)
         self.history_name = 'history_' + self.user[0] + '.json'
         self.deposits_name = 'deposits_' + self.user[0] + '.json'
 
