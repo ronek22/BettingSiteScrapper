@@ -3,7 +3,6 @@ from core.bookies.fortuna.pages import *
 from core.constants import GOOGLE_CHROME_BIN, CHROMEDRIVER_PATH
 from core.utility import sorting_json, save_to_json, open_json
 from os.path import isfile
-from os import environ
 import redis
 
 

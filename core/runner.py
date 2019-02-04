@@ -1,6 +1,6 @@
 from core.constants import MENU_TEXT
 from core.bookies.fortuna.fortuna import Fortuna
-from core.utility import choose_user, get_user, send_to_discord
+from core.utility import get_user, send_to_discord
 from analysis.user import User
 import os
 import redis

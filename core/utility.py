@@ -2,7 +2,7 @@ import http.client
 import json
 from operator import itemgetter
 from os.path import isfile, join
-from os import listdir, environ
+from os import listdir
 import re
 from pathlib import Path
 import redis
