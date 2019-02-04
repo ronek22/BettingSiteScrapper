@@ -2,8 +2,8 @@ import json
 from operator import itemgetter
 from os.path import isfile, join
 from os import listdir
-import sys, os
 import re
+from pathlib import Path
 
 
 def search_files():
@@ -32,8 +32,10 @@ def choose_user():
     user = input("Choose user: ")
     return open_json(users[user]['history']), open_json(users[user]['deposit'])  # tuple(history, deposits)
 
+
 def cash_format(cash):
     return "{0:.2f}".format(cash)
+
 
 def printf(header, value, value_type='cash'):
     if 'cash' in value_type:
@@ -44,14 +46,14 @@ def printf(header, value, value_type='cash'):
         print('{:<35} {:>10}'.format(header, 'Possible' if True else 'Not possible'))
 
 
-    
-
 def sorting_json(database, field='date'):
     return sorted(database, key=itemgetter(field), reverse=True)
 
 
 def save_to_json(database, filename):
-    with open('history/' + filename, 'w') as outfile:
+    path = Path('history', filename)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, 'w') as outfile:
         json.dump(database, outfile, indent=4)
 
 

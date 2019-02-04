@@ -28,7 +28,6 @@ class Menu:
         os.system('cls')
         user.show_data()
 
-
     def menu(self):
         menu_options = [self.perform_scraping, self.run_analysis, self.close_program]
         while True:

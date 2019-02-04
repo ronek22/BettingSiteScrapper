@@ -3,14 +3,18 @@ from core.bookies.fortuna.pages import *
 from core.utility import sorting_json, save_to_json, open_json
 from os.path import isfile
 
+
 class Fortuna:
     def __init__(self):
         self.user = (input("User: "), input("Password: "))
         self.history_name = 'history_' + self.user[0] + '.json'
         self.deposits_name = 'deposits_' + self.user[0] + '.json'
-        options = webdriver.FirefoxOptions()
-        options.add_argument('-headless')
-        self.driver = webdriver.Firefox(firefox_options=options, executable_path='drivers/geckodriver.exe')
+
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        options.add_argument('--disable-gpu')
+        options.add_argument('window-size=1400,1200')
+        self.driver = webdriver.Chrome(executable_path='drivers/chromedriver.exe', chrome_options=options)
         self.driver.get("https://www.efortuna.pl")
         self.bet_list = []
         self.deposit_list = []
