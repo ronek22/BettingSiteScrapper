@@ -57,7 +57,7 @@ def printf(header, value, value_type='cash'):
 
 def stringf(header, value, value_type='cash'):
     if 'cash' in value_type:
-        return '{:<35} {:>10} zł\n'.format(header, cash_format(value))
+        return '{:<35} {:>10} zl\n'.format(header, cash_format(value))
     elif 'percent' in value_type:
         return '{:<35} {:>10} %\n'.format(header, cash_format(value))
     elif 'bool' in value_type:
