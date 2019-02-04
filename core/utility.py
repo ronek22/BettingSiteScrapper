@@ -69,9 +69,8 @@ def save_to_json(database, filename, connection):
     connection.set(filename, json.dumps(database, indent=4))
 
 
-def open_json(filename):
-    with open('history/' + filename, 'r') as f:
-        return json.load(f)
+def open_json(key):
+    return json.loads(key)
 
 
 def str_to_float(text):
