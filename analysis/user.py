@@ -62,7 +62,8 @@ class User:
         table = self.history
         win = table['status'] == 'W'
         res = dict(win.value_counts())
-        y, n = res[True], res[False]
+        y = res[True] if True in res else 0
+        n = res[False] if False in res else 0
         return y / (y+n) * 100
 
     def show_data(self):
