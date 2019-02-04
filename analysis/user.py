@@ -30,7 +30,7 @@ class User:
         return {
             'roi': self.roi(),
             'streak_singles': self.streak(),
-            # 'streak_acco': self.streak_acco()
+            'streak_acco': self.streak_acco()
         }
 
     # ANALYSIS
