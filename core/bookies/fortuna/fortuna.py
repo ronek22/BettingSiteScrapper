@@ -35,7 +35,7 @@ class Fortuna:
     def get_history(self):
         last_date = None
         if self.db.exists(self.history_name):
-            self.bet_list = open_json(self.db.get(history_name))
+            self.bet_list = open_json(self.db.get(self.history_name))
             last_date = self.bet_list[0]['date']
 
         self.get_all_bets(last_date)
