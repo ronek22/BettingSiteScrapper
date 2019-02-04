@@ -1,4 +1,4 @@
-from core.utility import printf, stringf
+from core.utility import stringf
 from pandas.io.json import json_normalize
 
 TAX = 0.88
